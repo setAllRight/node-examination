@@ -3,13 +3,18 @@
 const db = require('../lib/mongodb.js');
 const RES = require('../config/config.js').RES;
 const conllection = `NBA`;
-
+const Enum = [ 'C', 'PF', 'SF', 'PG', 'SG' ];
  let addPlayer = async function addPlayer (req, res, next) {
-  let {name,id,position}=req.body;
+  let {id,name,position}=req.body;
   if(!name||!position||!id || id*1 < 0){
       res.send(RES.INVALIDINPUT);
+      return;
   }
-    await db.insertOne(conllection,req.body);
+  if(Enum.indexOf(position) == -1){
+    res.send(RES.VALIDATIONEXCEPTION);
+    return;
+  }
+    await db.insertOne(conllection,{id,name,position});
     res.send(RES.SUCCESS);
 };
 
@@ -46,21 +51,23 @@ const conllection = `NBA`;
 };
 
 let updatePlayer = async function updatePlayer (req, res, next) {
-  let {name,id,position}=req.body;
+  let {id,name,position}=req.body;
     if(id == '' || id === null || id*1<0){
         res.send(RES.INVALIDIDSUPPLIED);
         return;
     }
-    let result = await db.find(conllection,{id:id,name:name});
+    let result = await db.find(conllection,{id:id});
     if(result.length<=0){
         res.send(RES.PLAYERNOTFOUND);
         return;
     }
-    if(result.name != name){
+    console.log(position)
+    console.log(Enum.indexOf(position))
+    if(Enum.indexOf(position) == -1){
         res.send(RES.VALIDATIONEXCEPTION);
         return;
-    }
-     await db.update(conllection,{id:id},{$set:{position}});
+      }
+     await db.update(conllection,{id:id},{$set:{name,position}});
     res.send(RES.SUCCESS);
 
 };
