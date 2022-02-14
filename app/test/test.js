@@ -16,7 +16,7 @@ describe('1.添加球员 POST: /player', function () {
             body: {
                 id: 100,
                 name: 'qiaodan',
-                position: 'te'
+                position: 'C'
             }
         }, function (error, response, body) {
             expect(!error && response.statusCode === 200);
@@ -33,8 +33,8 @@ describe('1.添加球员 POST: /player', function () {
                 'content-type': 'application/json',
             },
             body: {
-                id: '',
-                name: '',
+                id: '101',
+                name: 'cilo',
                 position: 'SFF'
             }
         }, function (error, response, body) {
@@ -126,10 +126,24 @@ describe('2.修改球员 PUT /player', function () {
 });
 
 // 获取球员
-describe('3.获取球员 GET /player/:playId', function () {
+describe('3.获取球员 GET /player/:playId or /player', function () {
     it('测试描述: 参数正确', function (done) {
         request({
             url: httpHost + '/player/100',
+            method: 'GET',
+            json: true,
+            headers: {
+                'content-type': 'application/json',
+            }
+        }, function (error, response, body) {
+            expect(!error && response.statusCode === 200);
+            expect(body.code === RES.SUCCESS.code);
+            done();
+        });
+    });
+    it('测试描述: 无参数', function (done) {
+        request({
+            url: httpHost + '/player',
             method: 'GET',
             json: true,
             headers: {
